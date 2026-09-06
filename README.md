@@ -137,6 +137,57 @@ If you discover vulnerabilities using this tool, follow responsible disclosure p
 2. Allow reasonable time for remediation
 3. Do not exploit beyond proof of concept
 
+## Running the Scanner
+
+The scanner ships with a **vulnerable target simulator** (a stdlib `http.server`
+that intentionally reflects raw, unencoded input). The demo mode runs the full
+detection engine against that localhost simulator — the same code path used
+against a live target. Detection requires the raw payload to appear verbatim in
+the response (an HTML-encoding target does NOT cause a finding).
+
+```bash
+# Offline demo: scans the built-in vulnerable simulator, prints findings, exit 0
+python3 xss_scanner.py --demo
+
+# Live target (authorized lab targets only)
+python3 xss_scanner.py -u "http://<your-lab-target>/search?q=test"
+
+# DOM analysis + JSON export
+python3 xss_scanner.py -u "http://<your-lab-target>/page?q=test" --level 2 -o findings.json
+
+# Verbose
+python3 xss_scanner.py -u "http://<your-lab-target>/search?q=test" -v
+```
+
+Uses the Python standard library (`urllib`) only.
+
+## Tests
+
+```bash
+python3 -m unittest discover -s tests -v
+```
+
+Tests start a local vulnerable simulator and a clean control server, then assert
+that (a) the scanner flags the planted reflected-XSS bug and DOM sources/sinks,
+and (b) it does not false-positive on the encoding-safe control page.
+
+## Live Lab Test Plan
+
+Test only against targets in your own lab (e.g. a deliberately unencoded search
+echo app on 127.0.0.1 or 192.0.2.x RFC-5737 space):
+
+1. Deploy a lab app that reflects search input unencoded on 127.0.0.1.
+2. Baseline: `python3 xss_scanner.py -u "http://127.0.0.1:<port>/search?q=test" -v`.
+3. Run the scan and confirm a reflected finding is reported.
+4. Repeat against a control page that HTML-escapes input and confirm no finding.
+5. Document params scanned, contexts, and evidence in your lab report.
+
+## Metrics
+
+- **Video metric**: 60-second screencast of `--demo` reporting findings plus the
+  unittest output (`python3 -m unittest discover -s tests -v`), recorded on the
+  lab-only loopback target.
+
 ## License
 
 MIT
